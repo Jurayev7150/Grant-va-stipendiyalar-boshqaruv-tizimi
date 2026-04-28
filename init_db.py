@@ -7,6 +7,10 @@ Ishga tushirish:
 allaqachon bajarilgan bo'lishi kerak.
 """
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -55,7 +59,7 @@ DEMO_ARIZALAR = [
 
 
 def seed_users() -> dict[str, int]:
-    """Foydalanuvchilar va talabalarni yaratadi. Email→user_id qaytaradi."""
+    """Foydalanuvchilar va talabalarni yaratadi. Email->user_id qaytaradi."""
     email_to_id: dict[str, int] = {}
 
     for email, parol, rol, talaba in DEMO_USERS:
@@ -129,7 +133,7 @@ def seed_arizalar(email_to_id: dict[str, int]) -> None:
             INSERT INTO arizalar (talaba_id, ariza_turi, {obj_col}, holat, korib_chiqdi_id, izoh)
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (talaba["id"], tur, obj_val, holat, korib, izoh))
-        print(f"  [+] ariza: {email} → {dastur_nomi} ({holat})")
+        print(f"  [+] ariza: {email} -> {dastur_nomi} ({holat})")
 
 
 def main():

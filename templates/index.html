@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Bosh sahifa — GrantTizim{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-primary text-white rounded-3 mb-4">
+    <div class="container text-center py-4">
+        <h1 class="display-5 fw-bold">Grant va Stipendiyalar Boshqaruvi Tizimi</h1>
+        <p class="lead">Talabalar uchun grant va stipendiyalarga onlayn ariza topshirish platformasi</p>
+        {% if not current_user %}
+        <a href="{{ url_for('royxat') }}" class="btn btn-light btn-lg mt-3">
+            <i class="bi bi-rocket-takeoff"></i> Boshlash
+        </a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="row text-center mb-5">
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-people-fill display-4 text-primary"></i>
+                <h2 class="display-6 fw-bold mt-2">{{ stats.talabalar }}</h2>
+                <small class="text-muted">talaba</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-award-fill display-4 text-success"></i>
+                <h2 class="display-6 fw-bold mt-2">{{ stats.grantlar }}</h2>
+                <small class="text-muted">aktiv grant</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-cash-coin display-4 text-warning"></i>
+                <h2 class="display-6 fw-bold mt-2">{{ stats.stipendiyalar }}</h2>
+                <small class="text-muted">stipendiya</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-check-circle-fill display-4 text-info"></i>
+                <h2 class="display-6 fw-bold mt-2">{{ stats.tasdiqlangan }}</h2>
+                <small class="text-muted">tasdiqlangan ariza</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0"><i class="bi bi-stars text-warning"></i> Aktiv grantlar</h3>
+        <a href="{{ url_for('grantlar_list') }}" class="btn btn-outline-primary btn-sm">Hammasini ko'rish</a>
+    </div>
+    <div class="row">
+    {% for g in grantlar %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ g.nomi }}</h5>
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-building"></i> {{ g.beruvchi_tashkilot }}
+                    </p>
+                    <p class="fs-5 fw-bold text-success mb-1">
+                        {{ "{:,.0f}".format(g.summa).replace(",", " ") }} so'm
+                    </p>
+                    <p class="small text-danger mb-3">
+                        <i class="bi bi-calendar"></i> Muddat: {{ g.ariza_tugashi.strftime("%d.%m.%Y") }}
+                    </p>
+                    {% if current_user and current_user.rol == 'talaba' %}
+                    <a href="{{ url_for('ariza_yaratish', tur='grant', obj_id=g.id) }}" class="btn btn-primary btn-sm w-100">
+                        Ariza topshirish
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('grantlar_list') }}" class="btn btn-outline-primary btn-sm w-100">Batafsil</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12"><p class="text-muted text-center py-4">Hozircha aktiv grant yo'q.</p></div>
+    {% endfor %}
+    </div>
+</section>
+{% endblock %}

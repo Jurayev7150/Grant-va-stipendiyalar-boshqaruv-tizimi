@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Ariza topshirish{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i>
+                    Ariza topshirish — {{ obj.nomi }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6>Dastur ma'lumotlari:</h6>
+                    {% if tur == 'grant' %}
+                    <ul class="mb-0 small">
+                        <li><strong>Beruvchi:</strong> {{ obj.beruvchi_tashkilot }}</li>
+                        <li><strong>Summa:</strong> {{ "{:,.0f}".format(obj.summa).replace(",", " ") }} so'm</li>
+                        <li><strong>Min. GPA:</strong> {{ obj.minimal_gpa }}</li>
+                        <li><strong>Kurs:</strong> {{ obj.minimal_kurs }} – {{ obj.maksimal_kurs }}</li>
+                        <li><strong>Muddat:</strong> {{ obj.ariza_tugashi.strftime("%d.%m.%Y") }} gacha</li>
+                    </ul>
+                    {% else %}
+                    <ul class="mb-0 small">
+                        <li><strong>Turi:</strong> {{ obj.tur }}</li>
+                        <li><strong>Oylik:</strong> {{ "{:,.0f}".format(obj.oylik_summa).replace(",", " ") }} so'm</li>
+                        <li><strong>Davomiyligi:</strong> {{ obj.davomiyligi_oy }} oy</li>
+                        <li><strong>Min. GPA:</strong> {{ obj.minimal_gpa }}</li>
+                    </ul>
+                    {% endif %}
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Ariza matni / motivatsion xat</label>
+                        <textarea name="ariza_matni" class="form-control" rows="6"
+                                  placeholder="Nima uchun aynan siz ushbu {{ tur }} ga loyiq ekanligingizni yozing..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Topshirish
+                    </button>
+                    <a href="{{ url_for('panel') }}" class="btn btn-outline-secondary">Bekor qilish</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

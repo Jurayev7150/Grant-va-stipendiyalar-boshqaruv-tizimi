@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Ariza #{{ ariza.id }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('admin_arizalar') }}" class="btn btn-sm btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Orqaga
+</a>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <strong>Ariza #{{ ariza.id }}</strong>
+                {% if ariza.holat == 'tasdiqlangan' %}<span class="badge bg-success float-end">{{ ariza.holat }}</span>
+                {% elif ariza.holat == 'rad_etilgan' %}<span class="badge bg-danger float-end">{{ ariza.holat }}</span>
+                {% elif ariza.holat == 'korib_chiqilmoqda' %}<span class="badge bg-info text-dark float-end">{{ ariza.holat }}</span>
+                {% else %}<span class="badge bg-warning text-dark float-end">{{ ariza.holat }}</span>{% endif %}
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Talaba:</dt><dd class="col-sm-8">{{ ariza.talaba_fio }}</dd>
+                    <dt class="col-sm-4">Telefon:</dt><dd class="col-sm-8">{{ ariza.telefon or '—' }}</dd>
+                    <dt class="col-sm-4">Universitet:</dt><dd class="col-sm-8">{{ ariza.universitet }} / {{ ariza.fakultet }}</dd>
+                    <dt class="col-sm-4">Kurs / GPA:</dt><dd class="col-sm-8">{{ ariza.kurs }}-kurs / {{ ariza.gpa or '—' }}</dd>
+                    <dt class="col-sm-4">Ariza turi:</dt><dd class="col-sm-8">{{ ariza.ariza_turi }}</dd>
+                    <dt class="col-sm-4">Dastur:</dt><dd class="col-sm-8">{{ ariza.dastur_nomi }} ({{ "{:,.0f}".format(ariza.summa).replace(",", " ") }} so'm)</dd>
+                    <dt class="col-sm-4">Topshirilgan:</dt><dd class="col-sm-8">{{ ariza.topshirilgan_sana.strftime("%d.%m.%Y %H:%M") }}</dd>
+                    {% if ariza.korib_chiqilgan_sana %}
+                    <dt class="col-sm-4">Ko'rilgan:</dt><dd class="col-sm-8">{{ ariza.korib_chiqilgan_sana.strftime("%d.%m.%Y %H:%M") }}</dd>
+                    {% endif %}
+                    {% if ariza.ariza_matni %}
+                    <dt class="col-sm-4">Ariza matni:</dt>
+                    <dd class="col-sm-8"><div class="bg-light p-2 rounded">{{ ariza.ariza_matni }}</div></dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        {% if ariza.holat in ('yuborilgan', 'korib_chiqilmoqda') %}
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Holatni o'zgartirish</strong></div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Yangi holat</label>
+                        <select name="holat" class="form-select" required>
+                            <option value="korib_chiqilmoqda">Ko'rib chiqilmoqda</option>
+                            <option value="tasdiqlangan">Tasdiqlash</option>
+                            <option value="rad_etilgan">Rad etish</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Izoh</label>
+                        <textarea name="izoh" class="form-control" rows="3" placeholder="Qaror sababi..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <strong><i class="bi bi-clock-history"></i> Tarix (audit log)</strong>
+            </div>
+            <ul class="list-group list-group-flush">
+            {% for t in tarix %}
+                <li class="list-group-item small">
+                    <div class="text-muted">{{ t.ozgartirilgan.strftime("%d.%m.%Y %H:%M") }}</div>
+                    <div>
+                        {% if t.eski_holat %}{{ t.eski_holat }} → {% endif %}
+                        <strong>{{ t.yangi_holat }}</strong>
+                    </div>
+                    {% if t.ozgartiruvchi_email %}
+                    <div class="text-muted">{{ t.ozgartiruvchi_email }}</div>
+                    {% endif %}
+                    {% if t.izoh %}
+                    <div class="fst-italic mt-1">"{{ t.izoh }}"</div>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li class="list-group-item text-muted text-center">Tarix yo'q</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

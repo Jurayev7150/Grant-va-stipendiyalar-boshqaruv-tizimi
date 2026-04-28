@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Admin panel{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Admin paneli</h2>
+
+<div class="row mb-4">
+    <div class="col-md-2 col-6 mb-3">
+        <div class="card shadow-sm border-primary">
+            <div class="card-body text-center">
+                <h2 class="text-primary mb-0">{{ stats.talabalar }}</h2>
+                <small class="text-muted">Talabalar</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h2 class="text-secondary mb-0">{{ stats.jami_arizalar }}</h2>
+                <small class="text-muted">Jami arizalar</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+        <a href="{{ url_for('admin_arizalar', holat='yuborilgan') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body text-center">
+                    <h2 class="text-warning mb-0">{{ stats.yangi }}</h2>
+                    <small class="text-muted">Yangi</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+        <a href="{{ url_for('admin_arizalar', holat='korib_chiqilmoqda') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-info">
+                <div class="card-body text-center">
+                    <h2 class="text-info mb-0">{{ stats.korib_chiqilmoqda }}</h2>
+                    <small class="text-muted">Ko'rib chiqilmoqda</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+        <a href="{{ url_for('admin_arizalar', holat='tasdiqlangan') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-success">
+                <div class="card-body text-center">
+                    <h2 class="text-success mb-0">{{ stats.tasdiqlangan }}</h2>
+                    <small class="text-muted">Tasdiqlangan</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+        <a href="{{ url_for('admin_arizalar', holat='rad_etilgan') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body text-center">
+                    <h2 class="text-danger mb-0">{{ stats.rad_etilgan }}</h2>
+                    <small class="text-muted">Rad etilgan</small>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-4">
+    <a href="{{ url_for('admin_arizalar') }}" class="btn btn-primary">
+        <i class="bi bi-list-check"></i> Arizalar
+    </a>
+    <a href="{{ url_for('admin_talabalar') }}" class="btn btn-outline-primary">
+        <i class="bi bi-people"></i> Talabalar
+    </a>
+    {% if current_user.rol == 'admin' %}
+    <a href="{{ url_for('admin_grant_yangi') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Yangi grant
+    </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Universitet bo'yicha statistika</strong></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr><th>Universitet</th><th>Talabalar</th><th>Arizalar</th><th>O'rt. GPA</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for u in universitet_stat %}
+                        <tr>
+                            <td>{{ u.universitet }}</td>
+                            <td>{{ u.talabalar_soni }}</td>
+                            <td>{{ u.arizalar_soni }}</td>
+                            <td>{{ u.ortacha_gpa or '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Grant bo'yicha statistika</strong></div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr><th>Grant</th><th>Arizalar</th><th>Tasdiq.</th><th>Foiz</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for g in grant_stat %}
+                        <tr>
+                            <td>{{ g.nomi }}</td>
+                            <td>{{ g.jami_arizalar }}</td>
+                            <td>{{ g.tasdiqlangan_arizalar }}</td>
+                            <td>{{ g.qabul_foizi or '—' }}{% if g.qabul_foizi %}%{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

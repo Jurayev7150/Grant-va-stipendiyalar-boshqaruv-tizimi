@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Yangi grant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white"><h4 class="mb-0">Yangi grant qo'shish</h4></div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Grant nomi *</label>
+                        <input type="text" name="nomi" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tavsif</label>
+                        <textarea name="tavsif" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Beruvchi tashkilot *</label>
+                            <input type="text" name="beruvchi_tashkilot" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Summa (UZS) *</label>
+                            <input type="number" name="summa" class="form-control" min="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Min. GPA</label>
+                            <input type="number" name="minimal_gpa" class="form-control" step="0.01" min="0" max="5" value="3.0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Min. kurs</label>
+                            <input type="number" name="minimal_kurs" class="form-control" min="1" max="6" value="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Maks. kurs</label>
+                            <input type="number" name="maksimal_kurs" class="form-control" min="1" max="6" value="6">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Jins talabi</label>
+                            <select name="jins_talab" class="form-select">
+                                <option value="">Har ikkalasi</option>
+                                <option value="erkak">Erkak</option>
+                                <option value="ayol">Ayol</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ariza boshlanish *</label>
+                            <input type="date" name="ariza_boshlanishi" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ariza tugash *</label>
+                            <input type="date" name="ariza_tugashi" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Bekor qilish</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Stipendiyalar{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-cash-coin text-warning"></i> Stipendiyalar</h2>
+
+<div class="row">
+{% for s in stipendiyalar %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100 {% if not s.aktiv %}opacity-50{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <h5 class="card-title mb-0">{{ s.nomi }}</h5>
+                    <span class="badge bg-info text-dark">{{ s.tur }}</span>
+                </div>
+                <p>{{ s.tavsif or '' }}</p>
+                <ul class="list-unstyled small">
+                    <li><strong>Oylik:</strong> {{ "{:,.0f}".format(s.oylik_summa).replace(",", " ") }} so'm</li>
+                    <li><strong>Davomiyligi:</strong> {{ s.davomiyligi_oy }} oy</li>
+                    <li><strong>Min. GPA:</strong> {{ s.minimal_gpa }}</li>
+                </ul>
+                {% if current_user and current_user.rol == 'talaba' and s.aktiv %}
+                <a href="{{ url_for('ariza_yaratish', tur='stipendiya', obj_id=s.id) }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil-square"></i> Ariza topshirish
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

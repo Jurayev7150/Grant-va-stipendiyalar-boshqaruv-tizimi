@@ -1,12 +1,23 @@
-"""PostgreSQL ulanish va so'rovlar uchun yordamchi modul."""
+"""PostgreSQL ulanish va so'rovlar uchun yordamchi modul.
+
+Connection pool ishlatamiz — DNS lookup bir marta bajariladi va
+ulanishlar qayta ishlatiladi. Bu Render kabi serverless muhitda
+ham, lokal'da ham tez va ishonchli.
+"""
 import os
+import threading
 from contextlib import contextmanager
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from psycopg2.pool import ThreadedConnectionPool
 
 
-def _conn_params():
+_pool: ThreadedConnectionPool | None = None
+_pool_lock = threading.Lock()
+
+
+def _conn_params() -> dict:
     return {
         "host":     os.environ["SUPABASE_DB_HOST"],
         "port":     int(os.environ.get("SUPABASE_DB_PORT", 5432)),
@@ -14,24 +25,39 @@ def _conn_params():
         "password": os.environ["SUPABASE_DB_PASSWORD"],
         "dbname":   os.environ.get("SUPABASE_DB_NAME", "postgres"),
         "sslmode":  "require",
-        "connect_timeout": 10,
+        "connect_timeout":  30,
+        "keepalives":       1,
+        "keepalives_idle":  30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
     }
 
 
-def get_conn():
-    return psycopg2.connect(**_conn_params())
+def _get_pool() -> ThreadedConnectionPool:
+    global _pool
+    if _pool is None:
+        with _pool_lock:
+            if _pool is None:
+                _pool = ThreadedConnectionPool(
+                    minconn=1,
+                    maxconn=int(os.environ.get("DB_POOL_MAX", 10)),
+                    **_conn_params(),
+                )
+    return _pool
 
 
 @contextmanager
 def cursor(commit: bool = False):
-    """Avtomatik yopiladigan ulanish va kursor.
+    """Pool'dan ulanish oladi va kursor qaytaradi.
 
     Ishlatish:
         with cursor() as cur:
             cur.execute("SELECT 1")
             row = cur.fetchone()
     """
-    conn = get_conn()
+    pool = _get_pool()
+    conn = pool.getconn()
+    cur = None
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)
         yield cur
@@ -41,8 +67,9 @@ def cursor(commit: bool = False):
         conn.rollback()
         raise
     finally:
-        cur.close()
-        conn.close()
+        if cur is not None:
+            cur.close()
+        pool.putconn(conn)
 
 
 def fetch_all(sql: str, params: tuple = ()) -> list[dict]:
